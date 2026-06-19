@@ -1,0 +1,208 @@
+# ============================================================================
+# Velat Version Catalog
+# ============================================================================
+# Centralized version management for all Gradle modules.
+# Update a version here once → propagates to every module that uses it.
+#
+# References:
+# - Gradle Version Catalog docs: https://docs.gradle.org/current/userguide/platforms.html
+# - TOML format: https://toml.io/
+# ============================================================================
+
+[versions]
+# ----------------------------------------------------------------------------
+# Build tooling — Kotlin, Android Gradle Plugin, JVM target
+# ----------------------------------------------------------------------------
+# Kotlin: language version. Keep on stable channel; never use EAP/beta for SDK.
+kotlin = "2.1.0"
+
+# Android Gradle Plugin (AGP). Must be compatible with installed Android Studio
+# and Gradle version. AGP 8.7+ requires Gradle 8.9+.
+agp = "8.7.3"
+
+# JVM target — controls bytecode level. JVM 11 is the minimum for modern Android
+# tooling and gives us records, switch expressions, etc. if we ever write Java.
+jvm-target = "11"
+
+# Android SDK targets
+android-min-sdk = "26"    # Android 8.0 Oreo — covers ~92% of active devices in 2026
+android-target-sdk = "35" # Android 15 — required for new Play Store submissions
+android-compile-sdk = "35"
+
+# ----------------------------------------------------------------------------
+# Kotlin libraries — KMP-compatible where possible
+# ----------------------------------------------------------------------------
+# These are all kotlinx.* libraries, maintained by JetBrains, KMP-compatible.
+# Using these (instead of Java equivalents) means sdk-core stays portable to iOS later.
+coroutines = "1.10.1"
+serialization = "1.7.3"
+datetime = "0.6.1"
+
+# okio — multiplatform I/O library. We use this in sdk-core INSTEAD OF java.io.File
+# so that domain logic stays JVM-agnostic. okio's Path/FileSystem abstractions
+# work on both JVM (Android) and Native (iOS) targets.
+okio = "3.9.1"
+
+# ----------------------------------------------------------------------------
+# MediaPipe — the inference engine wrapped by sdk-engine-mediapipe
+# ----------------------------------------------------------------------------
+# tasks-genai contains LlmInference. tasks-text contains TextEmbedder.
+# Both ship MediaPipe's native libraries (~25MB combined) via Play Asset Delivery.
+mediapipe = "0.10.21"
+
+# ----------------------------------------------------------------------------
+# Compose — for sdk-compose module
+# ----------------------------------------------------------------------------
+# BOM (Bill of Materials) pins compatible Compose versions together.
+# Adding compose-bom and referencing other compose-* libs without versions
+# automatically gets the matched set.
+compose-bom = "2024.12.01"
+compose-compiler = "1.5.15"
+
+# AndroidX core libs
+androidx-core = "1.15.0"
+androidx-lifecycle = "2.8.7"
+androidx-sqlite = "2.4.0"
+
+# ----------------------------------------------------------------------------
+# PDF parsing — for sdk-pdf module
+# ----------------------------------------------------------------------------
+# pdfbox-android is the Apache PDFBox port. ~5MB AAR. Apache 2.0 license.
+pdfbox-android = "2.0.27.0"
+
+# ----------------------------------------------------------------------------
+# Testing
+# ----------------------------------------------------------------------------
+# JUnit 5 (Jupiter). Modern API: @Nested, @DisplayName, parameterized tests.
+# Significantly better than JUnit 4 for organizing complex test suites.
+junit-jupiter = "5.11.4"
+
+# MockK — Kotlin-native mocking. Mockito doesn't handle final classes natively
+# without inline-mock-maker; MockK does, with a more idiomatic API.
+mockk = "1.13.13"
+
+# Turbine — testing kotlinx.coroutines Flow. Wraps Flow collection in a
+# scope where you can `awaitItem()`, `awaitComplete()`, `expectNoEvents()`.
+turbine = "1.2.0"
+
+# Truth — Google's fluent assertion library. assertThat(list).containsExactly(...)
+# reads better than JUnit's vanilla assertEquals(expected, actual).
+truth = "1.4.4"
+
+# ----------------------------------------------------------------------------
+# Code quality
+# ----------------------------------------------------------------------------
+# Detekt — Kotlin static analysis. Catches code smells, complexity, style issues.
+detekt = "1.23.7"
+
+# Spotless — auto-formatter. Wraps ktlint + license header injection.
+spotless = "7.0.1"
+
+# ktlint — Kotlin linter/formatter. Configured via .editorconfig.
+ktlint = "1.5.0"
+
+# ----------------------------------------------------------------------------
+# Documentation
+# ----------------------------------------------------------------------------
+# Dokka — Kotlin's javadoc-equivalent. Generates docs from KDoc comments.
+dokka = "1.9.20"
+
+# ----------------------------------------------------------------------------
+# Publishing
+# ----------------------------------------------------------------------------
+# vanniktech maven publish — the standard Gradle plugin for publishing to
+# Maven Central via the new Sonatype Central Portal. Handles signing,
+# POM generation, and the upload workflow.
+maven-publish = "0.30.0"
+
+# Binary Compatibility Validator — generates and verifies a snapshot of the
+# public API surface. Fails CI if a PR changes public API without intent.
+# Mandatory for a versioned SDK to maintain backward compatibility promises.
+binary-compatibility = "0.16.3"
+
+# ============================================================================
+# [libraries] — actual artifacts referenced from build.gradle.kts as
+# `libs.kotlin.stdlib`, `libs.coroutines.core`, etc.
+# ============================================================================
+[libraries]
+
+# Kotlin core
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+# Coroutines
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+
+# Serialization (for Config persistence, JSON metadata, etc.)
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+
+# DateTime
+datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
+
+# okio — I/O abstractions
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+
+# AndroidX
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-sqlite = { module = "androidx.sqlite:sqlite", version.ref = "androidx-sqlite" }
+androidx-sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "androidx-sqlite" }
+
+# MediaPipe
+mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "mediapipe" }
+mediapipe-tasks-text = { module = "com.google.mediapipe:tasks-text", version.ref = "mediapipe" }
+
+# Compose — note no version (managed by compose-bom)
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+compose-runtime = { module = "androidx.compose.runtime:runtime" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+
+# PDF
+pdfbox-android = { module = "com.tom-roush:pdfbox-android", version.ref = "pdfbox-android" }
+
+# Testing
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit-jupiter" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
+
+# Detekt formatting rules — optional addon
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+
+# ============================================================================
+# [bundles] — convenience groupings used as `implementation(libs.bundles.compose)`
+# ============================================================================
+[bundles]
+
+# All Compose UI libs that a typical app needs
+compose = ["compose-runtime", "compose-foundation", "compose-material3", "compose-ui"]
+compose-debug = ["compose-ui-tooling", "compose-ui-tooling-preview"]
+
+# All JUnit Jupiter dependencies for unit tests
+junit = ["junit-jupiter-api", "junit-jupiter-engine", "junit-jupiter-params"]
+
+# ============================================================================
+# [plugins] — Gradle plugins, referenced from build.gradle.kts as
+# `alias(libs.plugins.android.library)`
+# ============================================================================
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+binary-compatibility = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility" }

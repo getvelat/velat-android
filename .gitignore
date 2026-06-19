@@ -1,0 +1,116 @@
+# ============================================================================
+# Gradle
+# ============================================================================
+# Gradle's build outputs and caches. All regeneratable; nothing of value here.
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+# Note: we DO commit gradle-wrapper.jar (small, makes ./gradlew work for new clones
+# without requiring the user to install Gradle).
+
+# Per-user Gradle settings (passwords, tokens, paths)
+gradle.properties.local
+local.properties
+
+# ============================================================================
+# Android / IntelliJ IDEA / Android Studio
+# ============================================================================
+# IDE-specific files. Each developer has their own; never share.
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.fleet/
+
+# Android Studio captures and profilers
+captures/
+
+# Native development
+.cxx/
+
+# ============================================================================
+# Compiled output
+# ============================================================================
+*.class
+*.jar
+!**/wrapper/*.jar
+*.aar
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Kotlin
+*.kotlin_module
+
+# ============================================================================
+# Logs
+# ============================================================================
+*.log
+hs_err_pid*.log
+replay_pid*.log
+
+# ============================================================================
+# Test artifacts
+# ============================================================================
+*.exec
+test-results/
+test-reports/
+
+# ============================================================================
+# Documentation generation
+# ============================================================================
+docs/api/
+
+# ============================================================================
+# Secrets — NEVER commit
+# ============================================================================
+# Signing keys (release builds)
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# API keys, tokens
+*.env
+.env
+.env.local
+secrets.properties
+
+# GPG keys for Maven Central publishing
+secring.gpg
+signing.gpg
+
+# ============================================================================
+# Operating system
+# ============================================================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ============================================================================
+# Editor (non-IDEA)
+# ============================================================================
+*~
+*.swp
+*.swo
+.vscode/
+.fleet/
+
+# ============================================================================
+# Python (for any helper scripts in docs/, build tooling)
+# ============================================================================
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ============================================================================
+# Node (if we add docs site with Docusaurus/VitePress later)
+# ============================================================================
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log

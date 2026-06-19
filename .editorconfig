@@ -1,0 +1,75 @@
+# EditorConfig — universal formatting rules across editors
+# https://editorconfig.org/
+#
+# This file is the source of truth for indentation, line endings, and
+# encoding. ktlint and Spotless read these properties.
+
+root = true
+
+# ============================================================================
+# All files
+# ============================================================================
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ============================================================================
+# Kotlin
+# ============================================================================
+[*.{kt,kts}]
+indent_size = 4
+max_line_length = 120
+
+# ktlint properties — these control the ktlint linter and formatter.
+# Documented at https://pinterest.github.io/ktlint/
+ktlint_standard_no-wildcard-imports = enabled
+ktlint_standard_filename = enabled
+ktlint_standard_no-empty-class-body = enabled
+ktlint_standard_package-name = enabled
+
+# Allow trailing commas — useful for multi-line constructors and list literals.
+# This makes diffs cleaner (adding a new arg doesn't modify the previous line).
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# ============================================================================
+# YAML — typically for GitHub Actions, GitLab CI, etc.
+# ============================================================================
+[*.{yml,yaml}]
+indent_size = 2
+
+# ============================================================================
+# JSON — package manifests, configs
+# ============================================================================
+[*.json]
+indent_size = 2
+
+# ============================================================================
+# TOML — version catalog (gradle/libs.versions.toml), other configs
+# ============================================================================
+[*.toml]
+indent_size = 2
+
+# ============================================================================
+# XML — Android manifests, resources
+# ============================================================================
+[*.xml]
+indent_size = 4
+
+# ============================================================================
+# Markdown — docs
+# ============================================================================
+[*.md]
+# Don't trim trailing whitespace in markdown — two trailing spaces means
+# "explicit line break" in markdown syntax.
+trim_trailing_whitespace = false
+indent_size = 2
+
+# ============================================================================
+# Makefile — if we add any build scripts
+# ============================================================================
+[Makefile]
+indent_style = tab
