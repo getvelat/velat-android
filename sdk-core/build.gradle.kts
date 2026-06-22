@@ -34,7 +34,11 @@ plugins {
 // Compatible with all Android targets (Android compiles Kotlin to JVM bytecode
 // then dexifies it; the source JVM target doesn't constrain Android compat).
 kotlin {
-    jvmToolchain(libs.versions.jvm.target.get().toInt())
+    jvmToolchain(
+        libs.versions.jvm.target
+            .get()
+            .toInt(),
+    )
 }
 
 dependencies {

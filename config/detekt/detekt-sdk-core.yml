@@ -1,0 +1,55 @@
+# =============================================================================
+# Detekt — sdk-core ADDITIONAL configuration
+# =============================================================================
+# This config layers on top of config/detekt/detekt.yml for the sdk-core module.
+# It enforces sdk-core's KMP-readiness discipline: NO Android-platform imports.
+#
+# When this rule fires, you're either:
+#   1. Adding Android-specific logic where it doesn't belong (move to
+#      sdk-engine-mediapipe, sdk-storage-sqlite, sdk-pdf, etc.)
+#   2. Reaching for an Android-specific implementation of something that should
+#      be an interface in sdk-core (provide the interface here; implement it
+#      in the Android-specific module).
+#
+# This rule is the COMPILER ENFORCEMENT of the iOS portability commitment
+# made in ADR 0002 (kmp-readiness-rules.md).
+# =============================================================================
+
+style:
+  ForbiddenImport:
+    active: true
+    imports:
+      # === Android platform — banned in sdk-core ===
+      - value: 'android.**'
+        reason: |
+          sdk-core must remain pure Kotlin/JVM (KMP-ready). Android imports
+          belong in sdk-engine-mediapipe, sdk-storage-sqlite, sdk-pdf, or sdk
+          modules. See docs/adr/0002-kmp-readiness-rules.md.
+      - value: 'androidx.**'
+        reason: |
+          sdk-core must remain pure Kotlin/JVM (KMP-ready). AndroidX imports
+          belong in Android-specific modules.
+
+      # === Java I/O — prefer okio for KMP portability ===
+      - value: 'java.io.File'
+        reason: |
+          Use okio.Path / okio.FileSystem instead. okio is multiplatform; java.io
+          is JVM-only. This rule keeps sdk-core portable to Kotlin/Native (iOS).
+      - value: 'java.io.FileInputStream'
+        reason: 'Use okio.FileSystem.source() instead.'
+      - value: 'java.io.FileOutputStream'
+        reason: 'Use okio.FileSystem.sink() instead.'
+
+      # === Java time — prefer kotlinx.datetime ===
+      - value: 'java.time.**'
+        reason: |
+          Use kotlinx.datetime instead. java.time is JVM-only; kotlinx.datetime
+          works on Kotlin/Native too.
+
+      # === Java util.logging — prefer kotlin-logging (added later) ===
+      - value: 'java.util.logging.**'
+        reason: 'sdk-core should not use java.util.logging. Use kotlin-logging.'
+
+      # === Inherited from base detekt.yml (kept here for reference) ===
+      - value: 'sun.**'
+        reason: 'sun.* is JVM-internal and not portable.'

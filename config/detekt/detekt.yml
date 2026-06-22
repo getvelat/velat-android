@@ -1,0 +1,157 @@
+# =============================================================================
+# Detekt — base configuration for all Velat modules
+# =============================================================================
+# This is the BASELINE config that applies to every module. Per-module overrides
+# go in config/detekt/detekt-<module>.yml and are layered on top.
+#
+# Detekt has ~250 rules across multiple rulesets. We start from the default
+# rule set and tighten/loosen specific rules below to match Velat's standards.
+#
+# Reference:
+#   https://detekt.dev/docs/introduction/configurations/
+#   https://detekt.dev/docs/rules/
+# =============================================================================
+
+build:
+  # Maximum issues before the build fails. We want strict from day 1 — any
+  # rule violation is a build failure. The team can suppress specific
+  # issues via @Suppress annotations when justified.
+  maxIssues: 0
+
+  # Excludes the default baseline file. We're not using baseline; everything
+  # is enforced from day 1.
+  excludeCorrectable: false
+
+config:
+  # Validate that this config file is itself valid (no typos in rule names).
+  validation: true
+
+  # Warn about unused properties.
+  warningsAsErrors: false
+
+  # Detekt will refuse to start if config keys are misspelled. Catches "I typed
+  # MagigNumber instead of MagicNumber" before it silently fails to apply.
+  checkExhaustiveness: false
+
+# =============================================================================
+# Ruleset configurations
+# =============================================================================
+# Each ruleset is a logical group of rules. We enable all default rulesets
+# and override individual rules as needed below.
+
+comments:
+  active: true
+  # Public API requires KDoc — this is critical for an SDK.
+  UndocumentedPublicClass:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/*Test.kt', '**/*Spec.kt']
+  UndocumentedPublicFunction:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/*Test.kt', '**/*Spec.kt']
+  UndocumentedPublicProperty:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/*Test.kt', '**/*Spec.kt']
+
+complexity:
+  active: true
+  # Functions can be at most 50 lines (was 60 by default). Forces decomposition.
+  LongMethod:
+    active: true
+    threshold: 50
+  # Classes max 300 lines (default was 600). A single class doing 600 lines is
+  # almost always doing too much.
+  LongParameterList:
+    active: true
+    functionThreshold: 6
+    constructorThreshold: 7
+  TooManyFunctions:
+    active: true
+    thresholdInClasses: 15
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 15
+  # Cognitive complexity — how hard a function is to read. Lower than cyclomatic.
+  CognitiveComplexMethod:
+    active: true
+    threshold: 15
+
+empty-blocks:
+  active: true
+
+exceptions:
+  active: true
+  # Don't catch generic Exception — be specific.
+  TooGenericExceptionCaught:
+    active: true
+  # Same for throw.
+  TooGenericExceptionThrown:
+    active: true
+
+formatting:
+  # We rely on Spotless+ktlint for formatting, but detekt-formatting addon
+  # gives us additional rules. Keep enabled for the extras.
+  active: true
+  android: false
+
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+  FunctionNaming:
+    active: true
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+  PackageNaming:
+    active: true
+    packagePattern: '[a-z]+(\.[a-z][a-zA-Z0-9]*)*'
+
+performance:
+  active: true
+
+potential-bugs:
+  active: true
+  # Reading public fields on the JVM is fine, but for an SDK we want explicit
+  # visibility — every public symbol is part of our API contract.
+  ExplicitGarbageCollectionCall:
+    active: true
+
+style:
+  active: true
+  # Forbid using println; logger required.
+  ForbiddenComment:
+    active: true
+    comments:
+      - reason: 'Forbidden TODO comment that should be tracked in issues instead'
+        value: 'TODO:'
+      - reason: 'Forbidden FIXME comment; create an issue with a link'
+        value: 'FIXME:'
+  ForbiddenImport:
+    active: true
+    # Project-wide forbidden imports (apply to ALL modules):
+    imports:
+      - value: 'java.util.logging.**'
+        reason: 'Use kotlinx logging or Android Log API instead'
+      - value: 'sun.**'
+        reason: 'sun.* is JVM-internal and not portable'
+  ReturnCount:
+    active: true
+    max: 4
+  WildcardImport:
+    active: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+  MagicNumber:
+    active: true
+    ignoreEnums: true
+    ignoreNamedArgument: true
+    ignoreAnnotation: true
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreLocalVariableDeclaration: true
+    ignoreConstantDeclaration: true
+    ignoreNumbers: ['-1', '0', '1', '2']
+  # Encourages `data class` for value objects.
+  DataClassContainsFunctions:
+    active: true

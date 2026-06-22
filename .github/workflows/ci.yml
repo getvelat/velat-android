@@ -1,0 +1,131 @@
+# =============================================================================
+# Velat CI — runs on every PR and push to main
+# =============================================================================
+# Quality gates enforced:
+#   - Spotless: code formatting + license headers
+#   - Detekt: static analysis + KMP discipline (no android.* in sdk-core)
+#   - Binary Compatibility Validator: public API didn't change without intent
+#   - Assemble: project builds
+#   - Test: unit tests pass
+#
+# If ANY gate fails → PR can't merge.
+#
+# References:
+#   https://docs.github.com/en/actions
+#   https://github.com/actions/setup-java
+#   https://github.com/gradle/actions/tree/main/setup-gradle
+# =============================================================================
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  # Allow manual trigger from GitHub UI for debugging.
+  workflow_dispatch:
+
+# Cancel previous in-progress runs on the same PR/branch when a new commit
+# arrives. Saves CI minutes; we only care about the latest commit's result.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Set minimum required permissions (principle of least privilege).
+# - contents:read needed to checkout code
+# - actions:read needed for caching
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  # =========================================================================
+  # build-and-check: everything in one job
+  # =========================================================================
+  # We could split into multiple jobs (one per gate) for parallelism, but
+  # at this scale (one module, fast checks), serial is simpler and uses
+  # less CI minutes due to JVM warmup amortization.
+  build-and-check:
+    name: Build and check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # Step 1: Get the code.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch all history. Some Gradle plugins (BCV) and Spotless can need it.
+          fetch-depth: 0
+
+      # Step 2: Install JDK. JDK 17 is the standard for Android Gradle Plugin 8.x.
+      # Using temurin (Eclipse Adoptium) — the standard OSS JDK distribution.
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Step 3: Set up Gradle with build caching.
+      # The setup-gradle action handles:
+      #   - Reading our wrapper version from gradle/wrapper/gradle-wrapper.properties
+      #   - Caching ~/.gradle/caches and ~/.gradle/wrapper
+      #   - Caching local build outputs (configurable)
+      # Cache key automatically includes gradle/libs.versions.toml so invalidation
+      # happens when we change versions.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          # Restore cache only if matched key is found; don't write back on PR.
+          # Push to main writes new cache entries.
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      # Step 4: Verify code formatting.
+      # If this fails → developer needs to run `./gradlew spotlessApply` locally.
+      - name: Spotless check
+        run: ./gradlew spotlessCheck
+
+      # Step 5: Static analysis with Detekt.
+      # Enforces our coding standards + KMP discipline (no android.* in sdk-core).
+      - name: Detekt
+        run: ./gradlew detekt
+
+      # Step 6: Verify public API didn't change without intent.
+      # If this fails → developer either ran `./gradlew apiDump` (intentional change)
+      # or accidentally changed a public symbol (bug to fix).
+      - name: API compatibility check
+        run: ./gradlew apiCheck
+
+      # Step 7: Build all modules.
+      # Compile Kotlin, generate JARs/AARs, but don't run tests yet.
+      - name: Assemble
+        run: ./gradlew assemble
+
+      # Step 8: Run all unit tests.
+      # Separated from assemble so we get clearer failure attribution.
+      - name: Test
+        run: ./gradlew test
+
+      # Step 9: Upload test reports as build artifact.
+      # Available for download from the Actions UI if tests fail —
+      # provides full HTML test reports for debugging.
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+          retention-days: 7
+
+      # Step 10: Upload Detekt reports on failure (HTML + SARIF format).
+      - name: Upload Detekt reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-reports
+          path: |
+            **/build/reports/detekt/
+          retention-days: 7
