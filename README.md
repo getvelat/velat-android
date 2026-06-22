@@ -77,8 +77,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE).
-
-The core SDK is open source and free for any use, commercial or otherwise.
-Future Pro tier modules will be distributed under a separate commercial
-license. The structure of the project (interfaces, module boundaries) is
-designed to support both without compromising the OSS core.

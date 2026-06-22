@@ -6,18 +6,17 @@
 
 ## Context
 
-Velat is a production-grade on-device LLM and RAG SDK for Android, distributed
-via Maven Central as `ai.velat:sdk:<version>`. It must:
+Velat is an on-device LLM and RAG SDK for Android, distributed via Maven Central
+as `ai.velat:sdk:<version>`. The architecture must:
 
-- Ship a usable v0.1 in 8 weeks of solo work.
-- Support potential commercial Pro tier modules without restructuring the OSS core.
 - Be portable to iOS later (planned v0.5+) without rewriting domain logic.
-- Maintain stable public API for B2B customers who integrate it into their apps.
-- Be auditable by compliance-conscious customers (legal, medical, regulated industries).
+- Maintain stable public API for downstream consumers who integrate it into their apps.
+- Be auditable by compliance-conscious users (legal, medical, regulated industries).
+- Allow swapping implementations of internal components (inference engine,
+  vector store, document loaders) without rippling changes across modules.
 
 This document captures the architectural decisions made before any production
-code was written, so future contributors and future-me can understand the
-reasoning.
+code was written, so future contributors can understand the reasoning.
 
 ## Decision 1: Multi-module Gradle structure
 
@@ -45,9 +44,8 @@ implementations land.
   alternative inference backend without touching `sdk-rag` or `sdk-core`.
 - **Build efficiency**: Incremental compilation per-module means changes in
   one module don't recompile the others.
-- **Future Pro modules**: Commercial modules like `sdk-storage-encrypted` and
-  `sdk-rag-advanced` can be developed and published separately under their own
-  commercial license without affecting the OSS core.
+- **Extension points**: Cross-module dependencies go through interfaces in
+  `sdk-core`. Alternative implementations can plug in without modifying core.
 - **Architectural enforcement**: `sdk-core` being a `kotlin.jvm` module
   (not Android library) means the compiler refuses Android-specific imports.
 
@@ -56,9 +54,9 @@ implementations land.
 - More Gradle configuration overhead. Mitigated by version catalog
   (`gradle/libs.versions.toml`) centralizing dependencies.
 
-## Decision 2: License — Apache 2.0 for OSS core
+## Decision 2: License — Apache 2.0
 
-Considered: MIT, Apache 2.0, AGPL, BSL (Business Source License), proprietary.
+Considered: MIT, Apache 2.0.
 
 **Chosen:** Apache 2.0.
 
@@ -68,54 +66,14 @@ Considered: MIT, Apache 2.0, AGPL, BSL (Business Source License), proprietary.
   to the contribution, with automatic termination if a licensee sues for patent
   infringement on the same code. For an SDK implementing algorithms (RRF fusion,
   retrieval pipelines), this protection matters. MIT has no such clause.
-- **B2B-friendly**: Compliance-conscious customers' legal teams audit Apache 2.0
-  quickly because it's familiar and explicit. AGPL would frighten enterprise
-  buyers (forces them to open-source their own code). BSL would slow adoption.
+- **Integration-friendly**: Legal teams audit Apache 2.0 quickly because it's
+  familiar and explicit.
 - **OSI-approved**: Recognized as an open-source license by the Open Source
-  Initiative. Required for Maven Central publishing of "free" artifacts.
-- **Permissive**: Allows commercial use, modification, redistribution without
-  open-sourcing derivatives. Maximizes adoption.
+  Initiative. Required for Maven Central publishing.
+- **Permissive**: Allows use, modification, and redistribution without
+  open-sourcing derivative work.
 
-### Trade-off
-
-- Anyone can fork Velat and create a competing product. Mitigation: brand,
-  community, integration support, and faster iteration speed are the moat —
-  not the source code itself.
-
-## Decision 3: Monetization — Open Core
-
-The SDK foundation stays Apache 2.0 forever. Future Pro features (encrypted
-storage, advanced reranking, OCR integration, compliance documentation pack,
-priority support) ship under separate commercial license as additional modules.
-
-### Why
-
-- **No SaaS backend**: Velat is entirely on-device. We can't monetize hosted
-  services (the typical OSS-to-paid path). We must monetize the code itself.
-- **Open Core is industry-standard**: GitLab, Elastic (pre-2021), MongoDB
-  (pre-SSPL) all used this model successfully.
-- **OSS adoption is the moat**: Free SDK builds developer trust and ecosystem
-  momentum. Paid tier captures enterprise budget for premium features.
-
-### Architectural implications
-
-To make Pro modules feasible without re-architecting in v0.2:
-
-- All cross-module dependencies go through interfaces defined in `sdk-core`.
-- The graph composition in `Velat.create()` is the only place that knows about
-  concrete implementations.
-- Pro implementations plug in by providing concrete classes for the same
-  interfaces; the OSS core doesn't need to change.
-
-### Trade-off
-
-- Discipline cost: every new feature must consider "does this belong in OSS
-  or Pro?" Wrong choice locks us into the wrong tier.
-- License validation infrastructure (LicenseValidator interface, JWT signing,
-  Cloudflare Worker) doesn't ship in v0.1 — deferred to v0.2 when the first
-  Pro module lands.
-
-## Decision 4: KMP-ready Android-first
+## Decision 3: KMP-ready Android-first
 
 `sdk-core` is a pure Kotlin/JVM library with zero Android dependencies. Other
 modules (`sdk-engine-mediapipe`, `sdk-storage-sqlite`, etc.) are Android
@@ -146,7 +104,7 @@ rules enforced in `sdk-core`.
 - iOS port in v0.5 will still require ~4-6 weeks of work, not "press the
   KMP button."
 
-## Decision 5: No DI framework
+## Decision 4: No DI framework
 
 Velat does not use Hilt, Koin, Dagger, or any DI framework. Dependency injection
 happens via constructor injection. `Velat.create()` composes the object graph.
@@ -167,7 +125,7 @@ happens via constructor injection. `Velat.create()` composes the object graph.
 - `Velat.create()` becomes the central composition root. If it grows beyond
   ~100 lines we should refactor into a builder helper, not introduce DI.
 
-## Decision 6: No Room (direct SQLite)
+## Decision 5: No Room (direct SQLite)
 
 We use the Android SQLite framework directly (via `androidx.sqlite`), not Room.
 
@@ -188,7 +146,7 @@ We use the Android SQLite framework directly (via `androidx.sqlite`), not Room.
 - Manual SQL writing and result mapping. Mitigated by keeping the database
   layer thin and well-tested.
 
-## Decision 7: Conventional Commits
+## Decision 6: Conventional Commits
 
 All commit messages follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/).
 
@@ -205,7 +163,7 @@ All commit messages follow [Conventional Commits 1.0.0](https://www.conventional
 
 - One more rule to follow. Mitigated by CONTRIBUTING.md documenting the format.
 
-## Decision 8: Code quality enforced from day 1
+## Decision 7: Code quality enforced from day 1
 
 Spotless (formatting + license headers), Detekt (static analysis), and Binary
 Compatibility Validator (API tracking) all run in CI on every PR. No "we'll
@@ -227,9 +185,7 @@ add tooling later."
 
 These are explicitly NOT decided today, to be revisited at named milestones:
 
-- **License key validation infrastructure**: v0.2 milestone, when first Pro
-  module ships.
-- **Pricing tiers**: After MVP launch and customer discovery confirms
-  willingness-to-pay tier boundaries.
-- **iOS port specifics**: v0.5 milestone.
-- **Logo and brand kit**: Before public launch, not before v0.1 development.
+- **iOS port specifics**: v0.5 milestone (see [ADR 0002](0002-kmp-readiness-rules.md)
+  for the discipline that keeps the path open).
+- **Reranking architecture**: when cross-encoder support lands.
+- **Telemetry policy**: if/when any opt-in usage metrics are added.
