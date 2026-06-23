@@ -1,5 +1,429 @@
-public final class ai/velat/core/VelatCore {
-	public static final field INSTANCE Lai/velat/core/VelatCore;
-	public static final field VERSION Ljava/lang/String;
+public final class ai/velat/core/api/ChunkWithEmbedding {
+	public fun <init> (Lai/velat/core/domain/Chunk;[F)V
+	public final fun component1 ()Lai/velat/core/domain/Chunk;
+	public final fun component2 ()[F
+	public final fun copy (Lai/velat/core/domain/Chunk;[F)Lai/velat/core/api/ChunkWithEmbedding;
+	public static synthetic fun copy$default (Lai/velat/core/api/ChunkWithEmbedding;Lai/velat/core/domain/Chunk;[FILjava/lang/Object;)Lai/velat/core/api/ChunkWithEmbedding;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChunk ()Lai/velat/core/domain/Chunk;
+	public final fun getEmbedding ()[F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class ai/velat/core/api/Chunker {
+	public abstract fun chunk (Ljava/lang/String;Ljava/lang/Integer;I)Ljava/util/List;
+}
+
+public final class ai/velat/core/api/Chunker$DefaultImpls {
+	public static synthetic fun chunk$default (Lai/velat/core/api/Chunker;Ljava/lang/String;Ljava/lang/Integer;IILjava/lang/Object;)Ljava/util/List;
+}
+
+public abstract interface class ai/velat/core/api/CrossEncoder : java/lang/AutoCloseable {
+	public abstract fun score-0E7RQCE (Ljava/lang/String;Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class ai/velat/core/api/DocumentLoader {
+	public abstract fun getSupportedExtensions ()Ljava/util/Set;
+	public abstract fun load-gIAlu-s (Lai/velat/core/api/DocumentSource;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class ai/velat/core/api/DocumentSource {
+}
+
+public final class ai/velat/core/api/DocumentSource$FromBytes : ai/velat/core/api/DocumentSource {
+	public fun <init> ([BLjava/lang/String;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBytes ()[B
+	public final fun getFilename ()Ljava/lang/String;
+	public fun hashCode ()I
+}
+
+public final class ai/velat/core/api/DocumentSource$FromPath : ai/velat/core/api/DocumentSource {
+	public fun <init> (Lokio/Path;)V
+	public final fun component1 ()Lokio/Path;
+	public final fun copy (Lokio/Path;)Lai/velat/core/api/DocumentSource$FromPath;
+	public static synthetic fun copy$default (Lai/velat/core/api/DocumentSource$FromPath;Lokio/Path;ILjava/lang/Object;)Lai/velat/core/api/DocumentSource$FromPath;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPath ()Lokio/Path;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/api/DocumentSource$FromText : ai/velat/core/api/DocumentSource {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lai/velat/core/api/DocumentSource$FromText;
+	public static synthetic fun copy$default (Lai/velat/core/api/DocumentSource$FromText;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lai/velat/core/api/DocumentSource$FromText;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContent ()Ljava/lang/String;
+	public final fun getIdentifier ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class ai/velat/core/api/Embedder : java/lang/AutoCloseable {
+	public abstract fun encode-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun encodeBatch-gIAlu-s (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getDimensions ()I
+}
+
+public final class ai/velat/core/api/GenerationOptions {
+	public static final field Companion Lai/velat/core/api/GenerationOptions$Companion;
+	public static final field DEFAULT_MAX_TOKENS I
+	public static final field DEFAULT_TEMPERATURE F
+	public static final field DEFAULT_TOP_K I
+	public static final field DEFAULT_TOP_P F
+	public fun <init> ()V
+	public fun <init> (FIFILjava/util/List;)V
+	public synthetic fun <init> (FIFILjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (FIFILjava/util/List;)Lai/velat/core/api/GenerationOptions;
+	public static synthetic fun copy$default (Lai/velat/core/api/GenerationOptions;FIFILjava/util/List;ILjava/lang/Object;)Lai/velat/core/api/GenerationOptions;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMaxTokens ()I
+	public final fun getStopTokens ()Ljava/util/List;
+	public final fun getTemperature ()F
+	public final fun getTopK ()I
+	public final fun getTopP ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/api/GenerationOptions$Companion {
+}
+
+public abstract interface class ai/velat/core/api/LlmEngine : java/lang/AutoCloseable {
+	public abstract fun generate (Ljava/lang/String;Lai/velat/core/api/GenerationOptions;)Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getInfo ()Lai/velat/core/api/LlmEngineInfo;
+	public abstract fun reset-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun warmup-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ai/velat/core/api/LlmEngine$DefaultImpls {
+	public static synthetic fun generate$default (Lai/velat/core/api/LlmEngine;Ljava/lang/String;Lai/velat/core/api/GenerationOptions;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class ai/velat/core/api/LlmEngineInfo {
+	public fun <init> (Ljava/lang/String;II)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun copy (Ljava/lang/String;II)Lai/velat/core/api/LlmEngineInfo;
+	public static synthetic fun copy$default (Lai/velat/core/api/LlmEngineInfo;Ljava/lang/String;IIILjava/lang/Object;)Lai/velat/core/api/LlmEngineInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContextSize ()I
+	public final fun getMaxOutputTokens ()I
+	public final fun getModelName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/api/LoadedDocument {
+	public fun <init> (Ljava/util/List;Lai/velat/core/domain/SourceType;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Lai/velat/core/domain/SourceType;
+	public final fun copy (Ljava/util/List;Lai/velat/core/domain/SourceType;)Lai/velat/core/api/LoadedDocument;
+	public static synthetic fun copy$default (Lai/velat/core/api/LoadedDocument;Ljava/util/List;Lai/velat/core/domain/SourceType;ILjava/lang/Object;)Lai/velat/core/api/LoadedDocument;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPages ()Ljava/util/List;
+	public final fun getSourceType ()Lai/velat/core/domain/SourceType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/api/LoadedPage {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Integer;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Integer;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Integer;)Lai/velat/core/api/LoadedPage;
+	public static synthetic fun copy$default (Lai/velat/core/api/LoadedPage;Ljava/lang/String;Ljava/lang/Integer;ILjava/lang/Object;)Lai/velat/core/api/LoadedPage;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPageNumber ()Ljava/lang/Integer;
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/api/RetrievalMode : java/lang/Enum {
+	public static final field DENSE_ONLY Lai/velat/core/api/RetrievalMode;
+	public static final field HYBRID Lai/velat/core/api/RetrievalMode;
+	public static final field SPARSE_ONLY Lai/velat/core/api/RetrievalMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lai/velat/core/api/RetrievalMode;
+	public static fun values ()[Lai/velat/core/api/RetrievalMode;
+}
+
+public abstract interface class ai/velat/core/api/Retriever {
+	public abstract fun retrieve-BWLJW6A (Ljava/lang/String;ILjava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ai/velat/core/api/Retriever$DefaultImpls {
+	public static synthetic fun retrieve-BWLJW6A$default (Lai/velat/core/api/Retriever;Ljava/lang/String;ILjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class ai/velat/core/api/VelatStore : java/lang/AutoCloseable {
+	public abstract fun clear-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deleteDocument-HgbOBCg (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun insertChunks-gUS_kYg (JLjava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun insertDocument-gIAlu-s (Lai/velat/core/domain/DocumentInfo;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun listDocuments-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun searchDense-BWLJW6A ([FILjava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun searchSparse-BWLJW6A (Ljava/lang/String;ILjava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ai/velat/core/api/VelatStore$DefaultImpls {
+	public static synthetic fun searchDense-BWLJW6A$default (Lai/velat/core/api/VelatStore;[FILjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun searchSparse-BWLJW6A$default (Lai/velat/core/api/VelatStore;Ljava/lang/String;ILjava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class ai/velat/core/domain/Chunk {
+	public fun <init> (Ljava/lang/String;IILjava/lang/Integer;I)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()Ljava/lang/Integer;
+	public final fun component5 ()I
+	public final fun copy (Ljava/lang/String;IILjava/lang/Integer;I)Lai/velat/core/domain/Chunk;
+	public static synthetic fun copy$default (Lai/velat/core/domain/Chunk;Ljava/lang/String;IILjava/lang/Integer;IILjava/lang/Object;)Lai/velat/core/domain/Chunk;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCharEnd ()I
+	public final fun getCharStart ()I
+	public final fun getPageNumber ()Ljava/lang/Integer;
+	public final fun getText ()Ljava/lang/String;
+	public final fun getTokenCount ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/domain/ChunkId {
+	public static final synthetic fun box-impl (J)Lai/velat/core/domain/ChunkId;
+	public static fun constructor-impl (J)J
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (JLjava/lang/Object;)Z
+	public static final fun equals-impl0 (JJ)Z
+	public final fun getValue ()J
+	public fun hashCode ()I
+	public static fun hashCode-impl (J)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (J)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()J
+}
+
+public final class ai/velat/core/domain/Citation {
+	public synthetic fun <init> (JLjava/lang/String;JLjava/lang/String;Ljava/lang/Integer;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-kbPUx4E ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3-6yOHB8g ()J
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/Integer;
+	public final fun component6 ()I
+	public final fun component7 ()I
+	public final fun copy-mOk_CPo (JLjava/lang/String;JLjava/lang/String;Ljava/lang/Integer;II)Lai/velat/core/domain/Citation;
+	public static synthetic fun copy-mOk_CPo$default (Lai/velat/core/domain/Citation;JLjava/lang/String;JLjava/lang/String;Ljava/lang/Integer;IIILjava/lang/Object;)Lai/velat/core/domain/Citation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCharEnd ()I
+	public final fun getCharStart ()I
+	public final fun getChunkId-6yOHB8g ()J
+	public final fun getDocumentId-kbPUx4E ()J
+	public final fun getDocumentTitle ()Ljava/lang/String;
+	public final fun getPageNumber ()Ljava/lang/Integer;
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/domain/DocumentId {
+	public static final synthetic fun box-impl (J)Lai/velat/core/domain/DocumentId;
+	public static fun constructor-impl (J)J
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (JLjava/lang/Object;)Z
+	public static final fun equals-impl0 (JJ)Z
+	public final fun getValue ()J
+	public fun hashCode ()I
+	public static fun hashCode-impl (J)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (J)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()J
+}
+
+public final class ai/velat/core/domain/DocumentInfo {
+	public synthetic fun <init> (JLjava/lang/String;Lai/velat/core/domain/SourceType;IJJLai/velat/core/domain/Metadata;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (JLjava/lang/String;Lai/velat/core/domain/SourceType;IJJLai/velat/core/domain/Metadata;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-kbPUx4E ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lai/velat/core/domain/SourceType;
+	public final fun component4 ()I
+	public final fun component5 ()J
+	public final fun component6 ()J
+	public final fun component7 ()Lai/velat/core/domain/Metadata;
+	public final fun copy-TWML4P4 (JLjava/lang/String;Lai/velat/core/domain/SourceType;IJJLai/velat/core/domain/Metadata;)Lai/velat/core/domain/DocumentInfo;
+	public static synthetic fun copy-TWML4P4$default (Lai/velat/core/domain/DocumentInfo;JLjava/lang/String;Lai/velat/core/domain/SourceType;IJJLai/velat/core/domain/Metadata;ILjava/lang/Object;)Lai/velat/core/domain/DocumentInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChunkCount ()I
+	public final fun getId-kbPUx4E ()J
+	public final fun getIndexedAtEpochMs ()J
+	public final fun getMetadata ()Lai/velat/core/domain/Metadata;
+	public final fun getSizeBytes ()J
+	public final fun getSourceType ()Lai/velat/core/domain/SourceType;
+	public final fun getTitle ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/domain/Metadata {
+	public static final field Companion Lai/velat/core/domain/Metadata$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/Map;
+	public final fun copy (Ljava/util/Map;)Lai/velat/core/domain/Metadata;
+	public static synthetic fun copy$default (Lai/velat/core/domain/Metadata;Ljava/util/Map;ILjava/lang/Object;)Lai/velat/core/domain/Metadata;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun get (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getSize ()I
+	public final fun getValues ()Ljava/util/Map;
+	public fun hashCode ()I
+	public final fun isEmpty ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/domain/Metadata$Companion {
+	public final fun empty ()Lai/velat/core/domain/Metadata;
+	public final fun of ([Lkotlin/Pair;)Lai/velat/core/domain/Metadata;
+}
+
+public final class ai/velat/core/domain/ScoredChunk {
+	public synthetic fun <init> (JJLai/velat/core/domain/Chunk;FLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1-6yOHB8g ()J
+	public final fun component2-kbPUx4E ()J
+	public final fun component3 ()Lai/velat/core/domain/Chunk;
+	public final fun component4 ()F
+	public final fun copy-N2JHUGU (JJLai/velat/core/domain/Chunk;F)Lai/velat/core/domain/ScoredChunk;
+	public static synthetic fun copy-N2JHUGU$default (Lai/velat/core/domain/ScoredChunk;JJLai/velat/core/domain/Chunk;FILjava/lang/Object;)Lai/velat/core/domain/ScoredChunk;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChunk ()Lai/velat/core/domain/Chunk;
+	public final fun getChunkId-6yOHB8g ()J
+	public final fun getDocumentId-kbPUx4E ()J
+	public final fun getScore ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class ai/velat/core/domain/SourceType : java/lang/Enum {
+	public static final field IMAGE_OCR Lai/velat/core/domain/SourceType;
+	public static final field MARKDOWN Lai/velat/core/domain/SourceType;
+	public static final field OTHER Lai/velat/core/domain/SourceType;
+	public static final field PDF Lai/velat/core/domain/SourceType;
+	public static final field TEXT Lai/velat/core/domain/SourceType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lai/velat/core/domain/SourceType;
+	public static fun values ()[Lai/velat/core/domain/SourceType;
+}
+
+public final class ai/velat/core/domain/Token {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lai/velat/core/domain/Token;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public abstract class ai/velat/core/error/VelatError : java/lang/RuntimeException {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/error/VelatError$Cancelled : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class ai/velat/core/error/VelatError$DocumentParse : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/error/VelatError$GenerationTimeout : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/error/VelatError$InsufficientMemory : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/error/VelatError$ModelDownload : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/error/VelatError$ModelLoad : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/error/VelatError$StorageFailure : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/error/VelatError$UnsupportedDevice : ai/velat/core/error/VelatError {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class ai/velat/core/rag/RrfFuser {
+	public static final field Companion Lai/velat/core/rag/RrfFuser$Companion;
+	public static final field DEFAULT_K I
+	public fun <init> ()V
+	public fun <init> (I)V
+	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun fuse (Ljava/util/List;Ljava/util/List;I)Ljava/util/List;
+	public final fun getK ()I
+}
+
+public final class ai/velat/core/rag/RrfFuser$Companion {
+}
+
+public final class ai/velat/core/rag/SentenceChunker : ai/velat/core/api/Chunker {
+	public static final field Companion Lai/velat/core/rag/SentenceChunker$Companion;
+	public static final field DEFAULT_OVERLAP_TOKENS I
+	public static final field DEFAULT_TARGET_TOKENS I
+	public fun <init> ()V
+	public fun <init> (IILai/velat/core/rag/SimpleTokenizer;)V
+	public synthetic fun <init> (IILai/velat/core/rag/SimpleTokenizer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun chunk (Ljava/lang/String;Ljava/lang/Integer;I)Ljava/util/List;
+	public final fun getOverlapTokens ()I
+	public final fun getTargetTokens ()I
+	public final fun getTokenizer ()Lai/velat/core/rag/SimpleTokenizer;
+}
+
+public final class ai/velat/core/rag/SentenceChunker$Companion {
+}
+
+public final class ai/velat/core/rag/SimpleTokenizer {
+	public static final field Companion Lai/velat/core/rag/SimpleTokenizer$Companion;
+	public static final field DEFAULT_CHARS_PER_TOKEN D
+	public fun <init> ()V
+	public fun <init> (D)V
+	public synthetic fun <init> (DILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun count (Ljava/lang/String;)I
+	public final fun getCharsPerToken ()D
+}
+
+public final class ai/velat/core/rag/SimpleTokenizer$Companion {
 }
 
