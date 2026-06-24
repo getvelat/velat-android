@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      Engine-spike app manifest.
+
+      No INTERNET permission — the whole point of Velat is on-device inference,
+      and this spike app verifies we can run the inference engine without any
+      network connectivity at all. If MediaPipe accidentally tried to phone
+      home, the app would fail to make the call (good, that's a violation we
+      want surfaced).
+
+      No EXTERNAL_STORAGE permissions — we read the model file from
+      Context.getExternalFilesDir(), which is scoped storage for our own
+      app's files. No permission required, even on Android 13+.
+    -->
+
+    <application
+        android:label="Velat Engine Spike"
+        android:theme="@style/Theme.VelatEngineSpike"
+        android:largeHeap="true"
+        tools:targetApi="34"
+        xmlns:tools="http://schemas.android.com/tools">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="Velat Engine Spike">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

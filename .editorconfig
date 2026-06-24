@@ -30,6 +30,14 @@ ktlint_standard_filename = enabled
 ktlint_standard_no-empty-class-body = enabled
 ktlint_standard_package-name = enabled
 
+# Compose UI functions are PascalCase by industry convention; ktlint's default
+# function-naming rule rejects that. We disable it project-wide because:
+# 1. Detekt's FunctionNaming rule still enforces camelCase for non-Composable
+#    functions (with ignoreAnnotated: ['Composable'] exception).
+# 2. Maintaining two parallel naming rules (ktlint + detekt) just duplicates
+#    config; let detekt own this dimension.
+ktlint_standard_function-naming = disabled
+
 # Allow trailing commas — useful for multi-line constructors and list literals.
 # This makes diffs cleaner (adding a new arg doesn't modify the previous line).
 ij_kotlin_allow_trailing_comma = true

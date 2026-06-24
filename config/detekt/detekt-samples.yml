@@ -1,0 +1,32 @@
+# =============================================================================
+# Detekt — sample apps overlay
+# =============================================================================
+# Layered ON TOP of config/detekt/detekt.yml for any module under samples/.
+# Sample apps are not libraries; they don't have public API to document or
+# stable interfaces to protect. We turn off the SDK-grade rules that would
+# otherwise force noise (every state field docs, every helper composable a
+# separate file, etc.).
+# =============================================================================
+
+comments:
+  # Sample apps don't have public APIs that consumers depend on, so missing
+  # KDoc on classes/functions/properties is not a defect here.
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false
+
+complexity:
+  # Compose UI functions naturally grow longer because each Composable nests
+  # its UI tree. 80 lines is a more realistic ceiling for samples.
+  LongMethod:
+    active: true
+    threshold: 80
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 20
+  CognitiveComplexMethod:
+    active: true
+    threshold: 20

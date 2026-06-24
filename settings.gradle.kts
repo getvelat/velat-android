@@ -64,7 +64,9 @@ rootProject.name = "velat-android"
 //
 // Day 1: sdk-core (pure Kotlin foundation)
 // Day 4: sdk-engine-mediapipe (Android library, MediaPipe LlmEngine impl)
+//        samples:engine-spike (Android app for device-level verification)
 // Day 5+: sdk-storage-sqlite, sdk-pdf, sdk-rag, sdk, sdk-compose
 
 include(":sdk-core")
 include(":sdk-engine-mediapipe")
+include(":samples:engine-spike")

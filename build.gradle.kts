@@ -74,6 +74,10 @@ spotless {
             .editorConfigOverride(
                 mapOf(
                     "max_line_length" to "120",
+                    // Compose UI functions are PascalCase by convention; ktlint's
+                    // default would flag every @Composable. Detekt enforces
+                    // naming for non-Composable functions (see config/detekt/detekt.yml).
+                    "ktlint_standard_function-naming" to "disabled",
                 ),
             )
 
@@ -138,10 +142,17 @@ subprojects {
         // Base config that applies to all modules.
         config.from(rootProject.files("config/detekt/detekt.yml"))
 
-        // Per-module additional config. The KMP discipline rules for sdk-core
-        // are layered on top of the base config.
-        if (name == "sdk-core") {
-            config.from(rootProject.files("config/detekt/detekt-sdk-core.yml"))
+        // Per-module additional config layered on top of the base.
+        when {
+            // sdk-core enforces KMP discipline (bans android.*, java.io.File, etc.)
+            name == "sdk-core" -> {
+                config.from(rootProject.files("config/detekt/detekt-sdk-core.yml"))
+            }
+            // Sample apps relax SDK-grade rules (no required KDoc on internal
+            // state, longer Composables tolerated).
+            path.startsWith(":samples") -> {
+                config.from(rootProject.files("config/detekt/detekt-samples.yml"))
+            }
         }
 
         // We don't use a baseline file — every issue must be fixed or
@@ -189,12 +200,14 @@ tasks.named<org.jetbrains.dokka.gradle.DokkaMultiModuleTask>("dokkaHtmlMultiModu
 // ============================================================================
 apiValidation {
     // Modules to EXCLUDE from API tracking. Sample apps, test utilities, and
-    // any module that isn't a published library go here. When we add samples/
-    // and demo apps later, add them to this list.
+    // any module that isn't a published library go here. BCV matches on
+    // the project's simple name (not its Gradle path).
     ignoredProjects.addAll(
         listOf(
-            // No projects to ignore yet — sdk-core is our only library and
-            // it should be tracked. Future: add "sample-chat", "velat-notes", etc.
+            // Sample apps — internal UI state, ViewModels, Composables are NOT
+            // part of the SDK contract. Tracking them would surface noise on
+            // every UI tweak and tempt us to treat sample internals as API.
+            "engine-spike",
         ),
     )
 
