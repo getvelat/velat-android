@@ -1,0 +1,17 @@
+public final class ai/velat/engine/mediapipe/MediaPipeLlmEngine : ai/velat/core/api/LlmEngine {
+	public static final field Companion Lai/velat/engine/mediapipe/MediaPipeLlmEngine$Companion;
+	public static final field DEFAULT_CONTEXT_SIZE I
+	public static final field DEFAULT_MAX_TOP_K I
+	public synthetic fun <init> (Lcom/google/mediapipe/tasks/genai/llminference/LlmInference;Ljava/util/concurrent/atomic/AtomicReference;Lai/velat/core/api/LlmEngineInfo;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun close ()V
+	public fun generate (Ljava/lang/String;Lai/velat/core/api/GenerationOptions;)Lkotlinx/coroutines/flow/Flow;
+	public fun getInfo ()Lai/velat/core/api/LlmEngineInfo;
+	public fun reset-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun warmup-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class ai/velat/engine/mediapipe/MediaPipeLlmEngine$Companion {
+	public final fun fromFile-yxL6bBk (Landroid/content/Context;Ljava/io/File;IILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun fromFile-yxL6bBk$default (Lai/velat/engine/mediapipe/MediaPipeLlmEngine$Companion;Landroid/content/Context;Ljava/io/File;IILkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+

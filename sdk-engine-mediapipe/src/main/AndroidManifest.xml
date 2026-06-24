@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Minimal manifest for the sdk-engine-mediapipe Android library.
+
+  Android library modules require an AndroidManifest.xml even when they
+  don't declare any components. The `package` is inherited from the
+  `namespace = "ai.velat.engine.mediapipe"` set in build.gradle.kts (AGP 8+).
+
+  No activities, no permissions, no services. MediaPipe LLM Inference runs
+  fully on-device with no special permissions required.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -60,8 +60,11 @@ rootProject.name = "velat-android"
 // We include modules incrementally as we build them. The full planned module
 // structure is documented in docs/adr/0001-architecture.md.
 //
-// For Day 1 we only include sdk-core (the foundation). Subsequent modules
-// (sdk-engine-mediapipe, sdk-storage-sqlite, sdk-pdf, sdk-rag, sdk, sdk-compose)
-// will be added as their first code lands.
+// Modules are added incrementally as their first code lands.
+//
+// Day 1: sdk-core (pure Kotlin foundation)
+// Day 4: sdk-engine-mediapipe (Android library, MediaPipe LlmEngine impl)
+// Day 5+: sdk-storage-sqlite, sdk-pdf, sdk-rag, sdk, sdk-compose
 
 include(":sdk-core")
+include(":sdk-engine-mediapipe")
